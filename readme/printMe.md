@@ -2,14 +2,15 @@
 ### Step 1: 
 There is a minimum of two files required for writing an nginx module, the first should be called config and looks something like this:
 
-Config:
+Config: The config file tells NGINX how to compile the module and what it is called.
+
 ```bash
 ngx_addon_name=ngx_http_print_me_module
 HTTP_MODULES="$HTTP_MODULES ngx_http_print_me_module"
 NGX_ADDON_SRCS="$NGX_ADDON_SRCS $ngx_addon_dir/ngx_http_print_me_module.c"
 ```
 
-Other One: ngx_http_print_me_module.c file
+Module file: (ngx_http_print_me_module.c) The module file contains the actual code.
 
 ```c
 #include <ngx_config.h>
@@ -101,3 +102,17 @@ static char *ngx_http_print_me(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 }
 
 ```
+
+```bash
+location = /print_me {
+  hello_world;
+}
+```
+
+
+### References 
+1. [nutrun.com](http://nutrun.com/weblog/2009/08/15/hello-world-nginx-module.html)
+1. [www.airpair.com](http://www.airpair.com/nginx/extending-nginx-tutorial)
+
+
+http://blog.zhuzhaoyuan.com/2009/08/creating-a-hello-world-nginx-module/
