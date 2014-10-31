@@ -1,3 +1,12 @@
+### Include header Files
+```C
+#include <ngx_config.h>
+#include <ngx_core.h>
+#include <ngx_http.h>
+```
+
+
+
 ### Nginx Variable (Module Configuration Struct(s))
 
 Most modules just need a location configuration. The naming convention for these is 
