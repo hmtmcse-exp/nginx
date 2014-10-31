@@ -1,3 +1,18 @@
+### Minimum Require of Nginx http Module files 
+There is a minimum of two files required for writing an nginx module
+1. config
+2. ngx_http_<module_name>_module.c
+
+Config: The config file tells NGINX how to compile the module and what it is called.
+
+```bash
+ngx_addon_name=ngx_http_<module_name>_module
+HTTP_MODULES="$HTTP_MODULES ngx_http_<module_name>_module"
+NGX_ADDON_SRCS="$NGX_ADDON_SRCS $ngx_addon_dir/ngx_http_<module_name>_module.c"
+```
+
+Module file: (ngx_http_<module_name>_module.c) The module file contains the actual code.
+
 #### Step-1 : Include Header Files
 
 ```C
@@ -99,4 +114,3 @@ static char *ngx_http_<module_name>(ngx_conf_t *cf, ngx_command_t *cmd, void *co
   return NGX_CONF_OK;
 }
 ```
-
