@@ -40,8 +40,8 @@ type is a set of flags that indicate where the directive is legal and how many a
 7. NGX_CONF_TAKE2: directive can take exactly 2 arguments ........
 8. NGX_CONF_TAKE7: directive can take exactly 7 arguments
 9. NGX_CONF_FLAG: directive takes a boolean ("on" or "off")
-10.NGX_CONF_1MORE: directive must be passed at least one argument
-11.NGX_CONF_2MORE: directive must be passed at least two arguments
+10. NGX_CONF_1MORE: directive must be passed at least one argument
+11. NGX_CONF_2MORE: directive must be passed at least two arguments
 
 ##### set:
 The set struct element is a pointer to a function for setting up part of the module's configuration; typically this function will translate the arguments passed to this directive and save an appropriate value in its configuration struct. This setup function will take three arguments:
