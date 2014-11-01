@@ -3,6 +3,7 @@
 *  [Compilation](readme/compile.md)
 
 *  Modules
-..* [Print Me](readme/print_me.md)
+    * [Print Me](readme/print_me.md)
+    * [Print Me By Input](readme/print_me_by_input.md)
 
 *  [References](readme/references.md)
