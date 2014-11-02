@@ -70,10 +70,59 @@ Finally, post is just a pointer to other crap the module might need while it's r
 The commands array is terminated with ngx_null_command as the last element.
 
 
-### Note- : 
-```C
+### Note-3: Variables
 
+##### Variables Type:
+1. NGX_HTTP_VAR_CHANGEABLE      :   variable is subject to change (for example the "set" command in the rewrite module);
+2. NGX_HTTP_VAR_NOCACHEABLE     :   the value cannot be cached;
+
+
+##### Adding a variable
+
+Syntax
+```C
+ngx_http_variable_t *ngx_http_add_variable(ngx_conf_t *cf, ngx_str_t *name, ngx_uint_t flags);
 ```
+
+1. cf - a module configuration to which the variable will be added;
+2. name - name of the variable to add;
+3. flags - flags defining the type of variable (see above)
+4. result - a pointer to the added ngx_http_variable_t structure.
+
+Example:
+```C
+static u_char  ngx_printable_message[] = "Yes I was print.... ha ha ha";
+static ngx_int_t
+ngx_http_ab_router_prefix_generator(ngx_http_request_t *r, ngx_http_variable_value_t *v, uintptr_t data){
+	ngx_http_variable_value_t *vv = v;	
+	vv->data = ngx_printable_message;	
+	if (vv->data == NULL) {
+		vv->valid = 0;
+		vv->not_found = 1;
+	} else {
+		vv->len = ngx_strlen( vv->data );
+		vv->valid = 1;
+		vv->no_cacheable = 0;
+		vv->not_found = 0;
+	}
+	return NGX_OK;
+}
+
+
+static ngx_int_t ngx_http_ab_router(ngx_conf_t *cf){ 
+    
+    ngx_http_variable_t *ab_prefix_var;
+    ngx_str_t ab_prefix_var_name = ngx_string("ab_prefix");
+
+    ab_prefix_var = ngx_http_add_variable(cf, &ab_prefix_var_name, NGX_HTTP_VAR_NOCACHEABLE );
+    if (ab_prefix_var == NULL) {
+            return NGX_ERROR;
+    }
+    ab_prefix_var->get_handler = ngx_http_ab_router_prefix_generator;
+    return NGX_OK;
+}
+```
+
 
 ### Note- : 
 ```C
