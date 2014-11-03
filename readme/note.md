@@ -124,9 +124,46 @@ static ngx_int_t ngx_http_ab_router(ngx_conf_t *cf){
 ```
 
 
-### Note- : 
-```C
+### Note-OpenSSL AES : 
 
+1. EVP_CIPHER_CTX_init()                :    Initializes cipher context ctx.
+```C
+void EVP_CIPHER_CTX_init(EVP_CIPHER_CTX *a);
+```
+2. EVP_EncryptInit()                    :    Sets up cipher context ctx for encryption
+
+```C
+int EVP_EncryptInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, unsigned char *key, unsigned char *iv);
+```
+
+3. EVP_EncryptFinal()                   :   If padding is enabled (the default) then encrypts the ``final'' data, that is any data that remains in a partial block.
+
+```C
+ int EVP_EncryptFinal_ex(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl);
+```
+
+4. EVP_DecryptFinal()                   :   If padding is enabled (the default) then decrypt the ``final'' data, that is any data that remains in a partial block.
+
+```C
+int EVP_DecryptFinal(EVP_CIPHER_CTX *ctx, unsigned char *outm, int *outl);
+```
+
+5. EVP_CIPHER_CTX_cleanup()             :   Clears all information from a cipher context and free up any allocated memory associate with it.
+
+```C
+int EVP_CIPHER_CTX_cleanup(EVP_CIPHER_CTX *a);
+```
+
+6. EVP_DecryptInit()                    :    Sets up cipher context ctx for Decryption
+
+```C
+int EVP_DecryptInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, unsigned char *key, unsigned char *iv);
+```
+
+7. EVP_DecryptUpdate()                  :   If padding is enabled (the default) then decrypt the ``final'' data, that is any data that remains in a partial block.                  
+
+```C
+int EVP_DecryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl, unsigned char *in, int inl);
 ```
 
 ### Note- : 
