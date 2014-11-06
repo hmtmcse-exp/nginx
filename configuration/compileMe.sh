@@ -6,7 +6,7 @@ cd /root/nginx
 rm -rf nginx-1.6.2
 tar -xzf nginx-1.6.2.tar.gz
 cd /root/nginx/nginx-1.6.2
-./configure  --add-module=/root/nginx/nginx/module/Print_Me_By_Input
+./configure  --add-module=/root/nginx/nginx/module/Parse
 make
 rm -rf /usr/local/nginx/*
 make install
