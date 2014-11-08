@@ -124,7 +124,7 @@ static ngx_int_t ngx_http_ab_router(ngx_conf_t *cf){
 ```
 
 
-### Note-OpenSSL AES : 
+### Note-4 OpenSSL AES : 
 
 1. EVP_CIPHER_CTX_init()                :    Initializes cipher context ctx.
 ```C
@@ -166,20 +166,54 @@ int EVP_DecryptInit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *type, unsigned char *
 int EVP_DecryptUpdate(EVP_CIPHER_CTX *ctx, unsigned char *out, int *outl, unsigned char *in, int inl);
 ```
 
-### Note- : 
+### Note-5 Added Access Cookie : 
 ```C
+ngx_str_t cookie = (ngx_str_t)ngx_string("auth_token"); 
+ngx_int_t location; 
+ngx_str_t cookie_value; 
+location = ngx_http_parse_multi_header_lines(&r->headers_in.cookies, &cookie, &cookie_value);
+```
+
+### Note-6 Access Request Type: 
+1. NGX_HTTP_GET
+2. NGX_HTTP_HEAD
+3. NGX_HTTP_POST 
+4. [Method Constant](http://lxr.nginx.org/source/src/http/ngx_http_request.h#L158)
+
+Example:
+```C
+ /* we response to 'GET' and 'HEAD' requests only */
+    if (!(r->method & (NGX_HTTP_GET|NGX_HTTP_HEAD))) {
+        return NGX_HTTP_NOT_ALLOWED;
+    }
+```
+
+### Note-7 Added Debug Log : 
+
+Add Parameter when Compile nginx : ./configure --with-debug
+
+Example:
+```bash
+./configure --with-debug --add-module=/root/nginx/Parse/
+```
+
+Then the debug level should be set with the error_log directive:
+
+```bash
+........
+
+error_log  logs/debug.log debug;
+
+......
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    
+    .......................
 
 ```
 
-### Note- : 
-```C
-
-```
-
-### Note- : 
-```C
-
-```
 
 ### Note- : 
 ```C
