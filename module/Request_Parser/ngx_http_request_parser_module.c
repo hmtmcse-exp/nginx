@@ -6,6 +6,8 @@
 
 //static u_char  ngx_printable_message[] = "Yes I was print.... ha ha ha";
 static char *ngx_http_request_parser(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
+static ngx_int_t
+ngx_http_request_parser_init(ngx_conf_t *cf);
 
 static ngx_command_t ngx_http_request_parser_commands[] = {
 
@@ -20,7 +22,7 @@ static ngx_command_t ngx_http_request_parser_commands[] = {
 
 static ngx_http_module_t ngx_http_request_parser_module_ctx = {
     NULL, /* preconfiguration */
-    NULL, /* postconfiguration */
+    ngx_http_request_parser_init, /* postconfiguration */
 
     NULL, /* create main configuration */
     NULL, /* init main configuration */
@@ -73,7 +75,7 @@ static ngx_int_t ngx_http_request_parser_handler(ngx_http_request_t *r) {
     ngx_buf_t *b;
     ngx_chain_t out;
 
-//    ngx_str_t args = r->args;
+    ngx_str_t args = r->args;
 
     r->headers_out.content_type_len = sizeof ("text/html") - 1;
     r->headers_out.content_type.len = sizeof ("text/html") - 1;
@@ -84,7 +86,7 @@ static ngx_int_t ngx_http_request_parser_handler(ngx_http_request_t *r) {
     out.buf = b;
     out.next = NULL;
 
-//    ngx_str_t arg_val;
+    ngx_str_t arg_val;
     char *params_args = "myArgs";
 
     //    if (r->method == NGX_HTTP_POST) {
@@ -96,17 +98,15 @@ static ngx_int_t ngx_http_request_parser_handler(ngx_http_request_t *r) {
         b->pos = headerValue.data;
         b->last = headerValue.data + headerValue.len;
         r->headers_out.content_length_n = headerValue.len;
+    }else if (ngx_http_request_parser_get_method_params(r, (u_char *) params_args, ngx_strlen((u_char *) params_args), &arg_val) == NGX_OK) {
+        b->pos = arg_val.data;
+        b->last = arg_val.data + arg_val.len;
+        r->headers_out.content_length_n = arg_val.len;
+    } else {
+        b->pos = args.data;
+        b->last = args.data + args.len;
+        r->headers_out.content_length_n = args.len;
     }
-
-//    if (ngx_http_request_parser_get_method_params(r, (u_char *) params_args, ngx_strlen((u_char *) params_args), &arg_val) == NGX_OK) {
-//        b->pos = arg_val.data;
-//        b->last = arg_val.data + arg_val.len;
-//        r->headers_out.content_length_n = arg_val.len;
-//    } else {
-//        b->pos = args.data;
-//        b->last = args.data + args.len;
-//        r->headers_out.content_length_n = args.len;
-//    }
 
 
 
@@ -126,4 +126,20 @@ static char *ngx_http_request_parser(ngx_conf_t *cf, ngx_command_t *cmd, void *c
     return NGX_CONF_OK;
 }
 
+static ngx_int_t
+ngx_http_request_parser_init(ngx_conf_t *cf){
+    ngx_http_handler_pt             *h;
+    ngx_http_core_main_conf_t       *cmcf;
+    
+    cmcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_core_module);
+
+    h = ngx_array_push(&cmcf->phases[NGX_HTTP_REWRITE_PHASE].handlers);
+
+    if (h == NULL) {
+        return NGX_ERROR;
+    }
+
+    *h = ngx_http_request_parser_post_read_handler;
+    return NGX_OK;
+}
 
