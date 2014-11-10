@@ -114,11 +114,15 @@ static ngx_int_t ngx_http_request_parser_handler(ngx_http_request_t *r) {
         b->pos = headerValue.data;
         b->last = headerValue.data + headerValue.len;
         r->headers_out.content_length_n = headerValue.len;
+    }else  if (ngx_http_request_parser_post_arg(r, (u_char *) params_args, ngx_strlen((u_char *) params_args), &headerValue) == NGX_OK) {
+        b->pos = headerValue.data;
+        b->last = headerValue.data + headerValue.len;
+        r->headers_out.content_length_n = headerValue.len;
     }else if (ngx_http_request_parser_get_method_params(r, (u_char *) params_args, ngx_strlen((u_char *) params_args), &arg_val) == NGX_OK) {
         b->pos = arg_val.data;
         b->last = arg_val.data + arg_val.len;
         r->headers_out.content_length_n = arg_val.len;
-    } else {
+    } else{
         b->pos = args.data;
         b->last = args.data + args.len;
         r->headers_out.content_length_n = args.len;
