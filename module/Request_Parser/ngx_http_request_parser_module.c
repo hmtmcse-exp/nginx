@@ -8,6 +8,22 @@
 static char *ngx_http_request_parser(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 static ngx_int_t
 ngx_http_request_parser_init(ngx_conf_t *cf);
+void
+ngx_http_request_parser_post_read(ngx_http_request_t *r);
+
+typedef struct {
+    unsigned          done:1;
+    unsigned          waiting_more_body:1;
+} ngx_http_form_input_ctx_t;
+
+
+
+
+ngx_int_t
+ngx_http_request_parser_post_read_handler(ngx_http_request_t *r){
+    ngx_http_read_client_request_body(r, ngx_http_request_parser_post_read);
+    return NGX_DONE; 
+}
 
 static ngx_command_t ngx_http_request_parser_commands[] = {
 
@@ -141,5 +157,24 @@ ngx_http_request_parser_init(ngx_conf_t *cf){
 
     *h = ngx_http_request_parser_post_read_handler;
     return NGX_OK;
+}
+
+void
+ngx_http_request_parser_post_read(ngx_http_request_t *r){
+    ngx_http_form_input_ctx_t     *ctx;
+
+    ctx = ngx_http_get_module_ctx(r, ngx_http_request_parser_module);
+
+    ctx->done = 1;
+
+#if defined(nginx_version) && nginx_version >= 8011
+    r->main->count--;
+#endif
+    /* waiting_more_body my rewrite phase handler */
+    if (ctx->waiting_more_body) {
+        ctx->waiting_more_body = 0;
+
+        ngx_http_core_run_phases(r);
+    }
 }
 

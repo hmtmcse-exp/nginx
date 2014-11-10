@@ -4,10 +4,7 @@
 #include <ngx_http.h>
 
 
-typedef struct {
-    unsigned          done:1;
-    unsigned          waiting_more_body:1;
-} ngx_http_form_input_ctx_t;
+
 
 
 /*GET Method Params Parse By Name*/
@@ -75,31 +72,7 @@ ngx_http_request_parser_headers_value(ngx_http_request_t *r, u_char *name, size_
     return NGX_DECLINED;
 }
 
-void
-ngx_http_request_parser_post_read(ngx_http_request_t *r){
-    ngx_http_form_input_ctx_t     *ctx;
 
-    ctx = ngx_http_get_module_ctx(r, ngx_http_request_parser_module);
-
-    ctx->done = 1;
-
-#if defined(nginx_version) && nginx_version >= 8011
-    r->main->count--;
-#endif
-    /* waiting_more_body my rewrite phase handler */
-    if (ctx->waiting_more_body) {
-        ctx->waiting_more_body = 0;
-
-        ngx_http_core_run_phases(r);
-    }
-}
-
-
-ngx_int_t
-ngx_http_request_parser_post_read_handler(ngx_http_request_t *r){
-    ngx_http_read_client_request_body(r, ngx_http_request_parser_post_read);
-    return NGX_DONE; 
-}
 
 //ngx_http_request_parser_request_handler(ngx_http_request_t *r) {
 //    
