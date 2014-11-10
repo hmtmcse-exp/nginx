@@ -3,6 +3,13 @@
 #include <ngx_core.h>
 #include <ngx_http.h>
 
+
+typedef struct {
+    unsigned          done:1;
+    unsigned          waiting_more_body:1;
+} ngx_http_form_input_ctx_t;
+
+
 /*GET Method Params Parse By Name*/
 
 ngx_int_t
