@@ -188,6 +188,7 @@ Example:
     }
 ```
 
+
 ### Note-7 Added Debug Log : 
 
 Add Parameter when Compile nginx : ./configure --with-debug
@@ -215,9 +216,9 @@ http {
 ```
 
 
-### Note- : 
+### Note-8 : Print Error Log in error.log 
 ```C
-
+ngx_log_error(NGX_LOG_ERR, r->connection->log, 0,"message");
 ```
 
 ### Note- : 
