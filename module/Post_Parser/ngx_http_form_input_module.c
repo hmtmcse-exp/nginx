@@ -206,6 +206,7 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
 
             len += b->last - b->pos;
         }
+        
         if (len == 0) {
             return NGX_OK;
         }
@@ -222,7 +223,9 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
             p = ngx_copy(p, cl->buf->pos, cl->buf->last - cl->buf->pos);
         }
 
+
     } else {
+
         b = r->request_body->bufs->buf;
         if (ngx_buf_size(b) == 0) {
             return NGX_OK;
@@ -239,14 +242,15 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
         if (p == NULL) {
             return NGX_OK;
         }
+
+
         if ((p == buf || *(p - 1) == '&') && *(p + arg_len) == '=') {
             v = p + arg_len + 1;
-            p = ngx_strlchr(v, last, '&');
             if (p == NULL) {
                 p = last;
 
             } 
-
+            
             if (multi) {
                 s = ngx_array_push(array);
                 if (s == NULL) {
@@ -274,6 +278,15 @@ ngx_http_form_input_arg(ngx_http_request_t *r, u_char *arg_name, size_t arg_len,
 }
 
 
+ngx_int_t
+ngx_http_form_input_request_handler(ngx_http_request_t *r, ngx_http_variable_value_t *v, uintptr_t data) {
+
+    ngx_str_t *res;
+    
+    ngx_http_set_form_input(r,res,v);
+    return NGX_OK;
+}
+
 static char *
 ngx_http_set_form_input_conf_handler(ngx_conf_t *cf, ngx_command_t *cmd,
     void *conf)
@@ -286,8 +299,18 @@ ngx_http_set_form_input_conf_handler(ngx_conf_t *cf, ngx_command_t *cmd,
     return "does not work with " NGINX_VER;
 #endif
 
+    
     ngx_http_form_input_used = 1;
-
+    
+    ngx_http_variable_t *my_var;
+    ngx_str_t my_var_name = ngx_string("my_var");
+    my_var = ngx_http_add_variable(cf, &my_var_name, NGX_HTTP_VAR_NOCACHEABLE);
+    if (my_var == NULL) {
+        return NGX_ERROR;
+    }
+    my_var->get_handler = ngx_http_form_input_request_handler;
+    
+    
     filter.type = NDK_SET_VAR_MULTI_VALUE;
     filter.size = 1;
 
@@ -304,18 +327,18 @@ ngx_http_set_form_input_conf_handler(ngx_conf_t *cf, ngx_command_t *cmd,
 
     value++;
 
-//    if (cf->args->nelts == 2) {
-//        p = value->data;
-//        p++;
-//        s.len = value->len - 1;
-//        s.data = p;
-//
-//    } else if (cf->args->nelts == 3) {
-//        s.len = (value + 1)->len;
-//        s.data = (value + 1)->data;
-//    }
- return NGX_CONF_OK;
-//    return ndk_set_var_multi_value_core (cf, value,  &s, &filter);
+    if (cf->args->nelts == 2) {
+        p = value->data;
+        p++;
+        s.len = value->len - 1;
+        s.data = p;
+
+    } else if (cf->args->nelts == 3) {
+        s.len = (value + 1)->len;
+        s.data = (value + 1)->data;
+    }
+
+    return ndk_set_var_multi_value_core (cf, value,  &s, &filter);
 }
 
 
@@ -382,16 +405,10 @@ ngx_http_form_input_handler(ngx_http_request_t *r)
 
    
 
-    ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
-                   "http form_input rewrite phase handler");
-
     ctx = ngx_http_get_module_ctx(r, ngx_http_form_input_module);
 
     if (ctx != NULL) {
         if (ctx->done) {
-            ngx_log_debug0(NGX_LOG_DEBUG_HTTP, r->connection->log, 0,
-                           "http form_input rewrite phase handler done");
-
             return NGX_DECLINED;
         }
 
@@ -405,12 +422,10 @@ ngx_http_form_input_handler(ngx_http_request_t *r)
     if (r->headers_in.content_type == NULL
         || r->headers_in.content_type->value.data == NULL)
     {
-
         return NGX_DECLINED;
     }
 
     value = r->headers_in.content_type->value;
-
 
     /* just focus on x-www-form-urlencoded */
 
@@ -476,7 +491,6 @@ ngx_http_form_input_post_read(ngx_http_request_t *r)
 #if defined(nginx_version) && nginx_version >= 8011
     r->main->count--;
 #endif
-
     /* waiting_more_body my rewrite phase handler */
     if (ctx->waiting_more_body) {
         ctx->waiting_more_body = 0;

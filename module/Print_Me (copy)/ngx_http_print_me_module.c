@@ -8,7 +8,7 @@ static char *ngx_http_print_me(ngx_conf_t *cf, ngx_command_t *cmd, void *conf);
 
 static ngx_command_t  ngx_http_print_me_commands[] = {
 
-  { ngx_string("parse"),
+  { ngx_string("print_me"),
     NGX_HTTP_LOC_CONF|NGX_CONF_NOARGS,
     ngx_http_print_me,
     0,
@@ -16,10 +16,6 @@ static ngx_command_t  ngx_http_print_me_commands[] = {
     NULL },
     ngx_null_command
 };
-
-typedef struct {
-    unsigned int name : 1;
-} ngx_http_print_me_ctx_t;
 
 static ngx_http_module_t  ngx_http_print_me_module_ctx = {
   NULL,                          /* preconfiguration */
@@ -64,8 +60,6 @@ static ngx_int_t ngx_http_print_me_handler(ngx_http_request_t *r)
 
   out.buf = b;
   out.next = NULL;
-  
-  ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "Yes this is");
 
   b->pos = ngx_printable_message;
   b->last = ngx_printable_message + sizeof(ngx_printable_message);
