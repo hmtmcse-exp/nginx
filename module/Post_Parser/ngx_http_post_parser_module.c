@@ -1,6 +1,7 @@
 #include <ngx_config.h>
 #include <ngx_core.h>
 #include <ngx_http.h>
+#include <ndk.h>
 
 
 static u_char  ngx_printable_message[] = "Yes I was print.... ha ha ha";
@@ -33,6 +34,8 @@ ngx_http_post_parser_body_handler(ngx_http_request_t *r) {
     }else{        
       ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "NAIRE VAI");      
     }
+    
+       r->main->count--;
 
 
 //    rc = ngx_http_mogilefs_put_handler(r);
@@ -87,14 +90,12 @@ static ngx_int_t ngx_http_print_me_handler(ngx_http_request_t *r)
   
   
     if(r->method == NGX_HTTP_POST && r->request_body == NULL) {
-        rc = ngx_http_read_client_request_body(r, ngx_http_post_parser_body_handler);
-        
+        rc = ngx_http_read_client_request_body(r, ngx_http_post_parser_body_handler);        
         if (rc >= NGX_HTTP_SPECIAL_RESPONSE) {
              ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "SPECIAL RESPONSE");
         }else{
            ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "NOT A SPECIAL RESPONSE"); 
         }
-
     }
 
   out.buf = b;
