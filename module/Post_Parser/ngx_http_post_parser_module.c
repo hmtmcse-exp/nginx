@@ -25,9 +25,7 @@ typedef struct {
 
 static void
 ngx_http_post_parser_body_handler(ngx_http_request_t *r) {
-//    ngx_int_t                           rc;
-
-    
+//    ngx_int_t                           rc;    
     if(r->request_body != NULL){
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "BODY ASET TO");   
     }else{        

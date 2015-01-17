@@ -12,12 +12,34 @@ typedef struct {
   ngx_str_t server_type; //API or SITE
 } get_input_main_conf_t;
 
+static void *
+ngx_http_get_input_create_loc_conf(ngx_conf_t *cf){
+    get_input_main_conf_t  *conf;
+    conf = ngx_pcalloc(cf->pool, sizeof(get_input_main_conf_t));
+    if (conf == NULL) {
+        return NGX_CONF_ERROR;
+    }
+    return conf;    
+}
+
+static char *
+ngx_http_get_input_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child){
+//    register_variable(cf);
+
+    get_input_main_conf_t *prev = parent;
+    get_input_main_conf_t *conf = child;
+
+    ngx_conf_merge_str_value(conf->server_type, prev->server_type, "");
+    return NGX_CONF_OK;
+}
+
+
 static ngx_command_t  ngx_http_get_input_commands[] = {
   {
     ngx_string("server_type"),
-    NGX_HTTP_SRV_CONF|NGX_CONF_1MORE,
+    NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_1MORE,
     ngx_conf_set_str_slot,
-    NGX_HTTP_MAIN_CONF_OFFSET,
+    NGX_HTTP_LOC_CONF_OFFSET,
     offsetof(get_input_main_conf_t, server_type),
     NULL
   },
@@ -35,8 +57,8 @@ static ngx_http_module_t  ngx_http_get_input_module_ctx = {
   NULL,                          /* create server configuration */
   NULL,                          /* merge server configuration */
 
-  NULL,                          /* create location configuration */
-  NULL                           /* merge location configuration */
+  ngx_http_get_input_create_loc_conf,/* create location configuration */
+  ngx_http_get_input_merge_loc_conf /* merge location configuration */
 };
 
 
@@ -77,9 +99,6 @@ static ngx_int_t ngx_http_get_input_handler(ngx_http_request_t *r){
        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "WEB SERVER");
   }
       
-  
-  
-
   b->pos = ngx_printable_message;
   b->last = ngx_printable_message + sizeof(ngx_printable_message);
   b->memory = 1;
