@@ -101,7 +101,6 @@ ngx_http_get_inpur_variable_print_me(ngx_http_request_t *r, ngx_http_variable_va
         vv->no_cacheable = 0;
         vv->not_found = 0;
     }
-     
     return NGX_OK;
 }
 
