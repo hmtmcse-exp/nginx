@@ -23,8 +23,7 @@ ngx_http_get_input_create_loc_conf(ngx_conf_t *cf) {
 
 static char *
 ngx_http_get_input_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child) {
-    //    register_variable(cf);
-
+    ngx_http_get_input_init(cf);
     get_input_main_conf_t *prev = parent;
     get_input_main_conf_t *conf = child;
     ngx_conf_merge_str_value(conf->server_type, prev->server_type, "");
