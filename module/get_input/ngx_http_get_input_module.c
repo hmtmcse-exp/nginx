@@ -77,15 +77,15 @@ ngx_module_t ngx_http_get_input_module = {
 static ngx_int_t
 ngx_http_get_inpur_variable_print_me(ngx_http_request_t *r, ngx_http_variable_value_t *v, uintptr_t data) {    
     get_input_main_conf_t *conf;    
-    u_char *buffer;
+    u_char buffer[100];
     conf = ngx_http_get_module_loc_conf(r, ngx_http_get_input_module);
     
     if (strcmp((char*) conf->server_type.data, "API")) {
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "API SERVER");
-        buffer = "API SERVER";
+        buffer[] = "API SERVER";
     } else {
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "WEB SERVER");
-         buffer = "WEB SERVER";
+         buffer[] = "WEB SERVER";
     }
 
     ngx_http_variable_value_t *vv = v;
