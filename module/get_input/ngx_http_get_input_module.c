@@ -104,7 +104,7 @@ ngx_http_get_inpur_variable_print_me(ngx_http_request_t *r, ngx_http_variable_va
 }
 
 static ngx_http_variable_t ngx_http_get_input_vars[] = {
-    { ngx_string("print_me"), NULL,
+    { ngx_string("$print_me"), NULL,
         ngx_http_get_inpur_variable_print_me, 0, NGX_HTTP_VAR_CHANGEABLE, 0},
     { ngx_null_string, NULL, NULL, 0, 0, 0}
 };
@@ -113,7 +113,7 @@ static ngx_http_variable_t ngx_http_get_input_vars[] = {
 static ngx_int_t
 ngx_http_get_input_init(ngx_conf_t *cf) {
     ngx_http_variable_t *var, *v;
-    for (v = ngx_http_aws_auth_vars; v->name.len; v++) {
+    for (v = ngx_http_get_input_vars; v->name.len; v++) {
         var = ngx_http_add_variable(cf, &v->name, v->flags);
         if (var == NULL) {
             return NGX_ERROR;
