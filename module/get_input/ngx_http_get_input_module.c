@@ -81,10 +81,10 @@ ngx_http_get_inpur_variable_print_me(ngx_http_request_t *r, ngx_http_variable_va
     conf = ngx_http_get_module_loc_conf(r, ngx_http_get_input_module);
     
     if (strcmp((char*) conf->server_type.data, "API")) {
-        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "API SERVER");
+        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "API SERVER %s", (char *) conf->server_type.data);
 //        value = ngx_string("API SERVER")
     } else {
-        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "WEB SERVER");
+        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "WEB SERVER %s", (char *) conf->server_type.data);
 //         value = ngx_string("WEB SERVER")
     }
 
