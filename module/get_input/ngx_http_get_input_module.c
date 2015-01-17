@@ -77,34 +77,31 @@ ngx_module_t ngx_http_get_input_module = {
 static ngx_int_t
 ngx_http_get_inpur_variable_print_me(ngx_http_request_t *r, ngx_http_variable_value_t *v, uintptr_t data) {    
     get_input_main_conf_t *conf;    
-    u_char buffer[100];
+    ngx_str_t value;
     conf = ngx_http_get_module_loc_conf(r, ngx_http_get_input_module);
     
     if (strcmp((char*) conf->server_type.data, "API")) {
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "API SERVER");
-        buffer[] = "API SERVER";
+        value = ngx_string("API SERVER")
     } else {
         ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "WEB SERVER");
-         buffer[] = "WEB SERVER";
+         value = ngx_string("WEB SERVER")
     }
 
     ngx_http_variable_value_t *vv = v;
-    vv->data =  buffer;
+   
     
-    if (vv->data == NULL) {
-        vv->valid = 0;
-        vv->not_found = 1;
-    } else {
-        vv->len = ngx_strlen(vv->data);
+        vv->data =  value.data;
+        vv->len = value.len;
         vv->valid = 1;
         vv->no_cacheable = 0;
         vv->not_found = 0;
-    }
+    
     return NGX_OK;
 }
 
 static ngx_http_variable_t ngx_http_get_input_vars[] = {
-    { ngx_string("$print_me"), NULL,
+    { ngx_string("print_me"), NULL,
         ngx_http_get_inpur_variable_print_me, 0, NGX_HTTP_VAR_CHANGEABLE, 0},
     { ngx_null_string, NULL, NULL, 0, 0, 0}
 };
